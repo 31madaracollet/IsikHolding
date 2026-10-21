@@ -116,9 +116,16 @@ Sipariş tutarları istemciden gelen fiyatlara güvenilmeden, sunucuda katalogda
 
 ## Yönetim paneli (`/admin`)
 
-`/admin` altındaki tüm yollar `middleware.ts` ile korunur: oturum çerezi yoksa
-`/admin/giris?next=...` sayfasına yönlendirilir. İmza doğrulaması ayrıca sunucu
-tarafında (`app/admin/(panel)/layout.tsx`) tekrar yapılır.
+Panel iki dağıtım modunda da çalışır:
+
+| Mod | Oturum | Veri erişimi |
+| --- | --- | --- |
+| **Sunucu** (Vercel / Node) | `/api/auth/login` → HMAC imzalı httpOnly çerez, `middleware.ts` koruması | `SUPABASE_SERVICE_ROLE_KEY` ile sunucuda |
+| **Statik** (GitHub Pages) | Supabase Auth (`signInWithPassword`), oturum tarayıcıda | Anon anahtar + `authenticated` RLS politikaları |
+
+Sunucu modunda `/admin` altındaki tüm yollar `middleware.ts` ile korunur: oturum
+çerezi yoksa `/admin/giris?next=...` sayfasına yönlendirilir. İmza doğrulaması
+ayrıca sunucu tarafında (`app/admin/(panel)/layout.tsx`) tekrar yapılır.
 
 `.env.local`:
 
@@ -132,7 +139,8 @@ AUTH_SECRET=openssl-rand-hex-32   # üretmek için: openssl rand -hex 32
 
 Giriş ekranı kullanıcı adı olarak **ad soyad**, **e-posta** veya **e-postanın
 kullanıcı kısmını** kabul eder; Türkçe karakter farkları (ı/i, ş/s, ğ/g …)
-normalize edilir, yani `Akif Isik` de çalışır.
+normalize edilir, yani `Akif Isik` de çalışır. Statik modda ad soyad yazılırsa
+`NEXT_PUBLIC_ADMIN_EMAIL` adresine eşlenir ve Supabase Auth ile giriş yapılır.
 
 **Sekmenin görünmesi:** oturum açıkken `app/(site)/layout.tsx` çerezden oturumu
 okur ve `site-header` / `site-footer` bileşenlerine `admin` prop'u geçer. Bu sayede
@@ -146,6 +154,80 @@ ortamlarda panel `.data/admin-store.json` üzerindeki örnek veriyle çalışır
 turuncu “Önizleme modu” şeridi gösterir.
 
 > `AUTH_SECRET` değişirse tüm açık oturumlar geçersiz olur.
+
+### Statik panel için Supabase Auth kullanıcısı
+
+GitHub Pages'te panel Supabase Auth ile giriş yapar. Kullanıcı, Supabase
+Dashboard → **Authentication → Users → Add user** (e-posta onaylı) ile veya
+SQL ile oluşturulur; `user_metadata.name` alanı panelde görünen addır:
+
+```sql
+-- extensions şemasında pgcrypto gerekir
+insert into auth.users (instance_id, id, aud, role, email, encrypted_password,
+  email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+  confirmation_token, email_change, email_change_token_new, recovery_token)
+values ('00000000-0000-0000-0000-000000000000', gen_random_uuid(), 'authenticated',
+  'authenticated', 'akif@isikholding.com',
+  extensions.crypt('guclu-bir-sifre', extensions.gen_salt('bf')), now(),
+  '{"provider":"email","providers":["email"]}', '{"name":"Akif Işık"}',
+  now(), now(), '', '', '', '');
+
+insert into auth.identities (id, user_id, identity_data, provider, provider_id,
+  last_sign_in_at, created_at, updated_at)
+select gen_random_uuid(), id,
+  jsonb_build_object('sub', id::text, 'email', email), 'email', id::text,
+  now(), now(), now()
+from auth.users where email = 'akif@isikholding.com';
+```
+
+`authenticated` rolü için gerekli RLS politikaları `supabase/schema.sql` §10'da.
+
+---
+
+## GitHub Pages (statik yayın)
+
+Site iki şekilde çalışır. Sunucu gerektirmeyen statik sürüm GitHub Pages'te
+yayınlanabilir:
+
+```bash
+npm run build:static     # → docs/ (basePath: /IsikHolding)
+```
+
+Statik derleme şunları yapar:
+
+- Sunucuya bağlı parçaları (`app/api/*`, `middleware.ts`) çıkarır.
+- `revalidate`/`force-dynamic` ayarlarını statik karşılıklarına çevirir.
+- Tüm formları, sepeti ve paneli **doğrudan Supabase'e** bağlar
+  (anon anahtar + RLS; panelde Supabase Auth).
+- Görselleri ve `_next` varlıklarını `/IsikHolding` alt yoluna taşır.
+
+Statik sürümde çalışanlar: anasayfa, ürünler, haberler (editoryal akış), fiyatlandırma,
+hakkımızda, iletişim formu, bülten, sepet ve sipariş, **yönetim paneli** (Supabase Auth).
+Sunucu tarafı RSS/GitHub proxy'si olmadığı için haber akışı editoryal içerikle,
+GitHub kartı ise depo bağlantısıyla görünür.
+
+### Yayın adımları
+
+1. `docs/` klasörünü commit'leyin (`npm run build:static` çıktısıdır).
+2. GitHub → **Settings → Pages → Build and deployment**
+   → Source: **Deploy from a branch**
+   → Branch: `main` (veya `arena/31337e37-isikholding`) · Folder: **`/docs`**
+3. Site birkaç dakika içinde şurada yayınlanır:
+   `https://31madaracollet.github.io/IsikHolding/`
+
+> Repo adı `IsikHolding` olduğu için `basePath` sabittir. Farklı bir repo adı
+> kullanacaksanız `next.config.ts` ve `scripts/build-static.mjs` içindeki
+> `/IsikHolding` değerlerini güncelleyin.
+>
+> GitHub Pages yalnızca statik dosya servis eder; bu yüzden `next start` ile
+> çalışan sürümdeki `/api/*` uç noktaları statik sürümde yoktur. Panel ve formlar
+> Supabase'e tarayıcıdan bağlanır, yani veri yine gerçekten kaydedilir.
+
+Yerelde statik sürümü denemek için:
+
+```bash
+node scripts/serve-docs.mjs   # http://localhost:3000/IsikHolding/
+```
 
 ---
 
