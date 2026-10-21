@@ -41,7 +41,23 @@ npm run build && npm start   # üretim derlemesi
 
 ---
 
-## Supabase kurulumu
+## Supabase (canlı kurulum yapıldı)
+
+Bu depo için Supabase projesi oluşturuldu ve şema uygulandı:
+
+| | |
+| --- | --- |
+| Proje | `isik-holding` |
+| Ref | `qfprngbydlbnsqrexnwm` |
+| Bölge | `eu-central-1` (Frankfurt) |
+| Migration | `init_isik_holding_schema` (5 tablo + `order_summary` görünümü) |
+| RLS | Tüm tablolarda açık; anon rolü yalnızca INSERT yapabilir |
+
+Uygulanan şema: `contact_messages`, `newsletter_subscribers`, `orders`, `order_items`, `coupons`
+(+ `order_summary` görünümü). `anon` rolüne yalnızca **insert** izni verildi;
+`orders` tablosunu okuyamaz (test edildi: `permission denied for table orders`).
+
+### Yeni bir projede sıfırdan kurulum
 
 1. [supabase.com](https://supabase.com) üzerinde proje oluşturun.
 2. **SQL Editor**'da [`supabase/schema.sql`](./supabase/schema.sql) dosyasını çalıştırın.
@@ -58,6 +74,23 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...   # asla NEXT_PUBLIC_ önekiyle kullanmayın
 
 > `service_role` anahtarı yalnızca sunucu route handler'larında (`/api/contact`,
 > `/api/newsletter`, `/api/orders`) kullanılır; tarayıcıya sızmaz.
+> İstemci paketinde yalnızca `anon` (public) anahtarı bulunur.
+
+### Tarayıcı köprüsü (neden var?)
+
+Bazı önizleme/CI ortamları dış ağda yalnızca belirli alan adlarına izin verir;
+bu durumda **sunucu** `*.supabase.co` adresine ulaşamaz ama **ziyaretçinin
+tarayıcısı** ulaşabilir. Bu yüzden:
+
+1. Route handler, Supabase'e ağ hatası nedeniyle yazamazsa `503` +
+   `{ fallback: true }` döner.
+2. İstemci, `anon` anahtarıyla doğrudan INSERT yapar (RLS politikaları izin verdiği ölçüde).
+3. Üretimde (Vercel vb.) sunucu yolu çalışır, köprü hiç devreye girmez.
+
+Tarayıcı köprüsünde hassas veri okunamaz: `SELECT` için policy yoktur.
+
+Uç nokta: `GET /api/health` → `{ supabase: { configured, reachable, latencyMs } }`
+(Sandbox önizlemesinde `reachable: false` görünmesi normaldir; canlı ortamda `true` olur.)
 
 ### API uç noktaları
 
@@ -68,6 +101,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...   # asla NEXT_PUBLIC_ önekiyle kullanmayın
 | `/api/contact` | POST | İletişim formu → `contact_messages`, `MSG-XXXXXX` referansı |
 | `/api/newsletter` | POST | Bülten kaydı → `newsletter_subscribers`, tekrar kayıtta dostça yanıt |
 | `/api/orders` | POST | Sipariş → `orders` + `order_items`, sunucuda fiyat yeniden hesaplanır |
+| `/api/health` | GET | Supabase yapılandırma/erişim durumu (anahtar sızdırmaz) |
 
 Formlarda honeypot alanı ve IP bazlı hız sınırı (rate limit) bulunur.
 Sipariş tutarları istemciden gelen fiyatlara güvenilmeden, sunucuda katalogdan yeniden hesaplanır.
@@ -108,9 +142,11 @@ lib/
   news-data.ts             # editoryal fallback + kurumsal duyurular
   checkout.ts              # kargo/kupon/toplam hesapları
   supabase/server.ts       # yalnızca sunucu tarafı Supabase istemcisi
+  supabase/client.ts       # tarayıcı istemcisi (yalnızca anon anahtarı)
+  supabase/fallback.ts     # sunucu erişemediğinde RLS destekli insert köprüsü
   github.ts                # GitHub API katmanı
   pricing.ts               # planlar ve hizmetler
-supabase/schema.sql        # tablolar, indeksler, RLS, kupon seed
+supabase/schema.sql        # tablolar, indeksler, RLS, kupon seed, insert politikaları
 public/images/             # üretilmiş kampanya & ürün görselleri
 ```
 

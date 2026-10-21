@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { subscribeViaBrowser } from "@/lib/supabase/fallback";
 
 export function NewsletterForm({
   variant = "dark",
@@ -28,7 +29,18 @@ export function NewsletterForm({
         body: JSON.stringify({ email, source, website: honeypot }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error ?? "Bir hata oluştu.");
+      if (!response.ok) {
+        if (data?.fallback) {
+          const bridged = await subscribeViaBrowser(email, source);
+          if (bridged) {
+            setState("done");
+            setMessage("Işık Bülten'e hoş geldiniz! İlk indirim kodunuz: ISIK15");
+            setEmail("");
+            return;
+          }
+        }
+        throw new Error(data.error ?? "Bir hata oluştu.");
+      }
       setState("done");
       setMessage(data.message ?? "Aramıza hoş geldiniz!");
       setEmail("");

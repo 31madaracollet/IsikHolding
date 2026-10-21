@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { newsletterSchema } from "@/lib/validation";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { fallbackResponse, isNetworkError } from "@/lib/network";
 
 export const runtime = "nodejs";
 
@@ -49,9 +50,20 @@ export async function POST(request: Request) {
           });
         }
         console.error("[newsletter] Supabase insert failed:", error.message);
+        if (isNetworkError(error)) {
+          return NextResponse.json(
+            fallbackResponse("Sunucu Supabase'e ulaşamadı."),
+            { status: 503 },
+          );
+        }
       } else {
         persistence = "supabase";
       }
+    } else {
+      return NextResponse.json(
+        fallbackResponse("Sunucu tarafı Supabase yapılandırılmadı."),
+        { status: 503 },
+      );
     }
 
     return NextResponse.json({

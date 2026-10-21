@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2, Send } from "lucide-react";
+import { submitContactViaBrowser } from "@/lib/supabase/fallback";
 
 const subjects = [
   "Genel bilgi",
@@ -25,6 +26,15 @@ export function ContactForm({
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") ?? ""),
+      email: String(formData.get("email") ?? ""),
+      phone: String(formData.get("phone") ?? ""),
+      subject: String(formData.get("subject") ?? ""),
+      message: String(formData.get("message") ?? ""),
+      consent: formData.get("consent") === "on",
+      website: String(formData.get("website") ?? ""),
+    };
     setState("loading");
     setMessage("");
 
@@ -32,18 +42,21 @@ export function ContactForm({
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.get("name"),
-          email: formData.get("email"),
-          phone: formData.get("phone"),
-          subject: formData.get("subject"),
-          message: formData.get("message"),
-          consent: formData.get("consent") === "on",
-          website: formData.get("website"),
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       if (!response.ok) {
+        // Sunucu Supabase'e ulaşamıyorsa tarayıcı köprüsüyle (RLS korumalı)
+        // doğrudan Supabase'e yaz.
+        if (data?.fallback) {
+          const bridged = await submitContactViaBrowser(payload);
+          if (bridged) {
+            setReference(bridged.reference);
+            setState("done");
+            form.reset();
+            return;
+          }
+        }
         throw new Error(
           typeof data.error === "string" ? data.error : "Mesaj gönderilemedi.",
         );

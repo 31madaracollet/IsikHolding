@@ -125,3 +125,39 @@ group by o.id;
 -- En çok satan ürünler:
 --   select product_name, sum(quantity) as qty
 --   from public.order_items group by product_name order by qty desc limit 10;
+
+-- 9) Tarayıcı köprüsü için INSERT politikaları -------------------------------
+-- Sunucu (route handler) Supabase'e erişemediğinde istemci, anon anahtarıyla
+-- doğrudan INSERT yapabilir. SELECT/UPDATE/DELETE için policy tanımlı
+-- değildir; anon rolü bu tabloları okuyamaz.
+drop policy if exists "anon insert contact" on public.contact_messages;
+drop policy if exists "anon insert newsletter" on public.newsletter_subscribers;
+drop policy if exists "anon insert orders" on public.orders;
+drop policy if exists "anon insert order items" on public.order_items;
+
+create policy "anon insert contact" on public.contact_messages
+  for insert to anon, authenticated
+  with check (length(name) between 2 and 80 and length(message) between 10 and 2000);
+
+create policy "anon insert newsletter" on public.newsletter_subscribers
+  for insert to anon, authenticated
+  with check (position('@' in email) > 1 and length(email) <= 160);
+
+create policy "anon insert orders" on public.orders
+  for insert to anon, authenticated
+  with check (status = 'new' and total >= 0);
+
+create policy "anon insert order items" on public.order_items
+  for insert to anon, authenticated
+  with check (quantity between 1 and 99 and line_total >= 0);
+
+revoke all on public.orders from anon;
+revoke all on public.order_items from anon;
+revoke all on public.contact_messages from anon;
+revoke all on public.newsletter_subscribers from anon;
+
+grant insert on public.contact_messages to anon, authenticated;
+grant insert on public.newsletter_subscribers to anon, authenticated;
+grant insert on public.orders to anon, authenticated;
+grant insert on public.order_items to anon, authenticated;
+grant select on public.coupons to anon, authenticated;

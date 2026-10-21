@@ -23,6 +23,7 @@ import {
   FREE_SHIPPING_THRESHOLD,
 } from "@/lib/checkout";
 import { cn, formatPrice } from "@/lib/utils";
+import { submitOrderViaBrowser } from "@/lib/supabase/fallback";
 
 export function Checkout() {
   const { items, subtotal, setQty, remove, clear, ready } = useCart();
@@ -67,6 +68,20 @@ export function Checkout() {
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const payload = {
+      customer: {
+        name: String(formData.get("name") ?? ""),
+        email: String(formData.get("email") ?? ""),
+        phone: String(formData.get("phone") ?? ""),
+        city: String(formData.get("city") ?? ""),
+        district: String(formData.get("district") ?? ""),
+        address: String(formData.get("address") ?? ""),
+        note: String(formData.get("note") ?? ""),
+      },
+      items: lines.map((line) => ({ slug: line.slug, qty: line.qty })),
+      coupon,
+      consent: formData.get("consent") === "on",
+    };
     setState("loading");
     setError("");
 
@@ -74,23 +89,27 @@ export function Checkout() {
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer: {
-            name: formData.get("name"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
-            city: formData.get("city"),
-            district: formData.get("district"),
-            address: formData.get("address"),
-            note: formData.get("note") ?? "",
-          },
-          items: lines.map((line) => ({ slug: line.slug, qty: line.qty })),
-          coupon,
-          consent: formData.get("consent") === "on",
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       if (!response.ok) {
+        if (data?.fallback) {
+          // Sunucu Supabase'e ulaşamıyor: tarayıcı köprüsüyle yaz (RLS insert).
+          const bridged = await submitOrderViaBrowser({
+            customer: payload.customer,
+            items: payload.items,
+            coupon,
+          });
+          if (bridged) {
+            setSuccess({
+              orderNumber: bridged.orderNumber,
+              total: bridged.total,
+              persistence: "browser",
+            });
+            clear();
+            return;
+          }
+        }
         throw new Error(
           typeof data.error === "string" ? data.error : "Sipariş oluşturulamadı.",
         );
@@ -167,7 +186,9 @@ export function Checkout() {
           <p className="mt-6 text-[10.5px] text-ink/35">
             {success.persistence === "supabase"
               ? "Sipariş talebiniz güvenli Supabase veritabanına kaydedildi."
-              : "Demo modu: sipariş talebi simüle edildi. Supabase anahtarları eklendiğinde kalıcı kayıt yapılır."}
+              : success.persistence === "browser"
+                ? "Sipariş talebiniz Supabase'e (RLS korumalı tarayıcı bağlantısıyla) kaydedildi."
+                : "Demo modu: sipariş talebi simüle edildi. Supabase anahtarları eklendiğinde kalıcı kayıt yapılır."}
           </p>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { products } from "@/lib/products";
 import { calculateTotals, makeOrderNumber } from "@/lib/checkout";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+import { fallbackResponse, isNetworkError } from "@/lib/network";
 
 export const runtime = "nodejs";
 
@@ -78,6 +79,12 @@ export async function POST(request: Request) {
 
       if (orderError || !order) {
         console.error("[orders] order insert failed:", orderError?.message);
+        if (orderError && isNetworkError(orderError)) {
+          return NextResponse.json(
+            fallbackResponse("Sunucu Supabase'e ulaşamadı."),
+            { status: 503 },
+          );
+        }
       } else {
         const { error: itemsError } = await supabase.from("order_items").insert(
           lines.map((line) => ({
@@ -96,6 +103,11 @@ export async function POST(request: Request) {
           persistence = "supabase";
         }
       }
+    } else {
+      return NextResponse.json(
+        fallbackResponse("Sunucu tarafı Supabase yapılandırılmadı."),
+        { status: 503 },
+      );
     }
 
     return NextResponse.json({
