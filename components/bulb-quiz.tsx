@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowRight, Check, Lightbulb, RotateCcw } from "lucide-react
 import { useCart } from "@/components/cart-provider";
 import { products } from "@/lib/products";
 import { cn, formatPrice } from "@/lib/utils";
+import { asset } from "@/lib/mode";
 
 type Scores = Record<string, number>;
 
@@ -219,7 +220,7 @@ export function BulbQuiz() {
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-3 backdrop-blur">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={(isDone ? result.image : questions[step] ? "/images/product-smart.jpg" : "/images/hero-bulb.jpg")}
+              src={asset(isDone ? result.image : questions[step] ? "/images/product-smart.jpg" : "/images/hero-bulb.jpg")}
               alt={isDone ? result.name : "Işık asistanı"}
               className="aspect-square w-full rounded-2xl object-cover"
             />

@@ -145,9 +145,18 @@ function KpiCard({
 export function AdminDashboard({
   data,
   adminName,
+  mutate,
+  onRefresh,
 }: {
   data: AdminData;
   adminName: string;
+  /** Statik dağıtımda durum güncellemelerini doğrudan Supabase'e yazar. */
+  mutate?: {
+    order: (id: string, status: OrderStatus) => Promise<void>;
+    message: (id: string, status: MessageStatus) => Promise<void>;
+  };
+  /** Statik dağıtımda veriyi yeniden yükler (router.refresh yerine). */
+  onRefresh?: () => void | Promise<void>;
 }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("overview");
@@ -220,18 +229,23 @@ export function AdminDashboard({
       current.map((order) => (order.id === id ? { ...order, status } : order)),
     );
     try {
-      const response = await fetch("/api/admin/orders", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error ?? "Güncellenemedi.");
+      if (mutate) {
+        await mutate.order(id, status);
+      } else {
+        const response = await fetch("/api/admin/orders", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error ?? "Güncellenemedi.");
+      }
       setToast({
         type: "ok",
         text: `Sipariş durumu "${ORDER_STATUS_LABELS[status]}" olarak güncellendi.`,
       });
-      router.refresh();
+      if (onRefresh) await onRefresh();
+      else router.refresh();
     } catch (error) {
       setOrders(previous);
       setToast({
@@ -252,18 +266,23 @@ export function AdminDashboard({
       ),
     );
     try {
-      const response = await fetch("/api/admin/messages", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status }),
-      });
-      const payload = await response.json();
-      if (!response.ok) throw new Error(payload.error ?? "Güncellenemedi.");
+      if (mutate) {
+        await mutate.message(id, status);
+      } else {
+        const response = await fetch("/api/admin/messages", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error ?? "Güncellenemedi.");
+      }
       setToast({
         type: "ok",
         text: `Mesaj durumu "${MESSAGE_STATUS_LABELS[status]}" olarak güncellendi.`,
       });
-      router.refresh();
+      if (onRefresh) await onRefresh();
+      else router.refresh();
     } catch (error) {
       setMessages(previous);
       setToast({
@@ -382,7 +401,7 @@ export function AdminDashboard({
           </span>
           <button
             type="button"
-            onClick={() => router.refresh()}
+            onClick={() => (onRefresh ? void onRefresh() : router.refresh())}
             className="inline-flex items-center gap-1.5 rounded-full border border-ink/12 bg-white px-3.5 py-2 text-[10.5px] font-bold transition hover:border-ink/30"
           >
             <RefreshCw className="size-3.5" />

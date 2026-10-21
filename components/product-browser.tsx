@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/product-card";
 import { categories, categoryToSlug, products } from "@/lib/products";
@@ -24,6 +24,14 @@ export function ProductBrowser({
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<SortKey>("featured");
+
+  // `/urunler?kategori=...` bağlantıları statik dağıtımda da çalışsın.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("kategori");
+    if (requested && Object.values(categoryToSlug).includes(requested)) {
+      setCategory(requested);
+    }
+  }, []);
 
   const filtered = useMemo(() => {
     const list = products.filter((product) => {

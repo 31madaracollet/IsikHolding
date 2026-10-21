@@ -24,6 +24,7 @@ import {
 } from "@/lib/checkout";
 import { cn, formatPrice } from "@/lib/utils";
 import { submitOrderViaBrowser } from "@/lib/supabase/fallback";
+import { STATIC_EXPORT } from "@/lib/mode";
 
 export function Checkout() {
   const { items, subtotal, setQty, remove, clear, ready } = useCart();
@@ -86,6 +87,24 @@ export function Checkout() {
     setError("");
 
     try {
+      if (STATIC_EXPORT) {
+        const bridged = await submitOrderViaBrowser({
+          customer: payload.customer,
+          items: payload.items,
+          coupon,
+        });
+        if (!bridged) {
+          throw new Error("Sipariş oluşturulamadı. Lütfen tekrar deneyin.");
+        }
+        setSuccess({
+          orderNumber: bridged.orderNumber,
+          total: bridged.total,
+          persistence: "supabase",
+        });
+        clear();
+        return;
+      }
+
       const response = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

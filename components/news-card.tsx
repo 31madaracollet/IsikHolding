@@ -1,6 +1,7 @@
 import { ArrowUpRight, Clock, Radio } from "lucide-react";
 import type { NewsItem } from "@/lib/types";
 import { cn, timeAgo } from "@/lib/utils";
+import { asset } from "@/lib/mode";
 
 const categoryStyles: Record<string, string> = {
   Enerji: "bg-brand text-ink",
@@ -31,7 +32,7 @@ export function NewsCard({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={item.image ?? "/images/product-led.jpg"}
+          src={item.image ?? asset("/images/product-led.jpg")}
           alt=""
           loading="lazy"
           className="size-full object-cover transition duration-700 group-hover:scale-[1.04]"

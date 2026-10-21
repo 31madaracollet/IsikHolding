@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { signOutAdmin } from "@/lib/admin/client-auth";
+import { STATIC_EXPORT } from "@/lib/mode";
 
 export function LogoutButton({
   className,
@@ -19,7 +21,11 @@ export function LogoutButton({
 
   async function handleLogout() {
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      if (STATIC_EXPORT) {
+        await signOutAdmin();
+      } else {
+        await fetch("/api/auth/logout", { method: "POST" });
+      }
     } finally {
       router.replace("/");
       router.refresh();

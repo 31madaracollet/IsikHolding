@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Boxes, PackageCheck, Sparkles, Truck } from "lucide-react";
 import { ProductBrowser } from "@/components/product-browser";
-import { categoryToSlug, products } from "@/lib/products";
+import { products } from "@/lib/products";
 
 export const metadata: Metadata = {
   title: "Ürünler & Ampul Kataloğu",
@@ -17,17 +17,8 @@ const highlights = [
   { icon: Boxes, label: "450+", sub: "bayi & satış noktası" },
 ];
 
-export default async function ProductsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ kategori?: string }>;
-}) {
-  const params = await searchParams;
-  const slugs = Object.values(categoryToSlug);
-  const initialCategory =
-    params.kategori && slugs.includes(params.kategori)
-      ? params.kategori
-      : "all";
+export default function ProductsPage() {
+  // Kategori, istemcide `?kategori=` parametresinden okunur; sayfa statik kalır.
 
   return (
     <>
@@ -91,7 +82,7 @@ export default async function ProductsPage({
 
       <section className="py-8 sm:py-10">
         <div className="container-x">
-          <ProductBrowser initialCategory={initialCategory} />
+          <ProductBrowser />
 
           <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-3xl bg-brand p-6 sm:flex-row sm:items-center sm:p-8">
             <div>

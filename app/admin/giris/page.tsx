@@ -12,6 +12,7 @@ import {
 import { LoginForm } from "@/components/admin/login-form";
 import { LogoMark } from "@/components/logo";
 import { getAdminSession } from "@/lib/auth";
+import { STATIC_EXPORT } from "@/lib/mode";
 
 export const metadata: Metadata = {
   title: "Yönetici girişi",
@@ -37,19 +38,15 @@ const highlights = [
   },
 ];
 
-export default async function AdminLoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string }>;
-}) {
-  const session = await getAdminSession();
-  if (session) redirect("/admin");
+export default async function AdminLoginPage() {
+  // Statik dağıtımda oturum Supabase Auth'ta; yönlendirme istemcide yapılır.
+  if (!STATIC_EXPORT) {
+    const session = await getAdminSession();
+    if (session) redirect("/admin");
+  }
 
-  const params = await searchParams;
-  const next =
-    typeof params.next === "string" && params.next.startsWith("/admin")
-      ? params.next
-      : "/admin";
+  // `?next=` parametresi istemcide okunur (statik dışa aktarımda searchParams yok).
+  const next = "/admin";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-cream px-4 py-10 sm:px-6">

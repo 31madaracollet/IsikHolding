@@ -12,6 +12,7 @@ import {
   Store,
 } from "lucide-react";
 import { ContactForm } from "@/components/contact-form";
+import { PlanNote } from "@/components/plan-note";
 import { Faq } from "@/components/faq";
 import { site } from "@/lib/site";
 
@@ -118,14 +119,8 @@ const faqs = [
   },
 ];
 
-export default async function ContactPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ konu?: string; plan?: string }>;
-}) {
-  const params = await searchParams;
-  const defaultSubject = subjectByQuery[params.konu ?? ""] ?? "Genel bilgi";
-  const plan = params.plan ? planNames[params.plan] : null;
+export default function ContactPage() {
+  // `?konu=` / `?plan=` parametreleri istemcide okunur (statik dışa aktarım).
 
   return (
     <>
@@ -162,15 +157,7 @@ export default async function ContactPage({
                 Ürün seçiminden proje teklifine, sipariş takibinden teknik
                 desteğe: doğru ekiple buluşmanız için buradayız.
               </p>
-              {plan && (
-                <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-brand/20 px-4 py-2 text-[11px] font-semibold">
-                  <span className="flex size-4 items-center justify-center rounded-full bg-ink text-[8px] text-brand">
-                    1
-                  </span>
-                  İlgilendiğiniz plan: <strong>{plan}</strong> · formun konusu
-                  otomatik seçildi.
-                </div>
-              )}
+              <PlanNote />
             </div>
 
             <div className="rounded-[28px] bg-ink p-6 text-white">
@@ -236,7 +223,7 @@ export default async function ContactPage({
 
       <section className="py-6 sm:py-10">
         <div className="container-x grid gap-5 lg:grid-cols-[1.25fr_0.75fr] lg:items-start">
-          <ContactForm defaultSubject={defaultSubject} />
+          <ContactForm />
 
           <aside className="space-y-4 lg:sticky lg:top-[94px]">
             <div className="overflow-hidden rounded-3xl border border-ink/[0.08] bg-white">

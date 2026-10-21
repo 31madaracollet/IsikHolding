@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /sepet
+Disallow: /api/
+Disallow: /admin
+
+Sitemap: https://31madaracollet.github.io/IsikHolding/sitemap.xml

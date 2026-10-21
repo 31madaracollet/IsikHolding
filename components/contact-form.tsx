@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2, Send } from "lucide-react";
 import { submitContactViaBrowser } from "@/lib/supabase/fallback";
+import { STATIC_EXPORT } from "@/lib/mode";
 
 const subjects = [
   "Genel bilgi",
@@ -13,6 +14,16 @@ const subjects = [
   "Kariyer",
 ] as const;
 
+const subjectByQuery: Record<string, (typeof subjects)[number]> = {
+  satis: "Satış & sipariş",
+  siparis: "Satış & sipariş",
+  toptan: "Toptan & bayilik",
+  bayi: "Toptan & bayilik",
+  proje: "Proje danışmanlığı",
+  destek: "Teknik destek",
+  kariyer: "Kariyer",
+};
+
 export function ContactForm({
   defaultSubject = "Genel bilgi",
 }: {
@@ -21,6 +32,15 @@ export function ContactForm({
   const [state, setState] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [message, setMessage] = useState("");
   const [reference, setReference] = useState<string | null>(null);
+  const [subject, setSubject] = useState<string>(defaultSubject);
+
+  // `?konu=bayi` gibi bağlantılarda konu alanını önceden seç.
+  useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("konu");
+    if (requested && subjectByQuery[requested]) {
+      setSubject(subjectByQuery[requested]);
+    }
+  }, []);
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +59,19 @@ export function ContactForm({
     setMessage("");
 
     try {
+      if (STATIC_EXPORT) {
+        if (payload.website.trim()) {
+          setState("done");
+          return;
+        }
+        const bridged = await submitContactViaBrowser(payload);
+        if (!bridged) throw new Error("Mesaj gönderilemedi. Lütfen tekrar deneyin.");
+        setReference(bridged.reference);
+        setState("done");
+        form.reset();
+        return;
+      }
+
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -164,7 +197,8 @@ export function ContactForm({
             id="contact-subject"
             name="subject"
             required
-            defaultValue={defaultSubject}
+            value={subject}
+            onChange={(event) => setSubject(event.target.value)}
             className="input appearance-none"
           >
             {subjects.map((subject) => (

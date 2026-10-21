@@ -1,4 +1,5 @@
 import type { Product } from "@/lib/types";
+import { asset } from "@/lib/mode";
 
 export const products: Product[] = [
   {
@@ -12,7 +13,7 @@ export const products: Product[] = [
       "Işık Eco, evinizin her odasında kullanabileceğiniz günlük LED ampul serisidir. E27 duyu sayesinde mevcut armatürlerinize doğrudan uyum sağlar. Flicker-free sürücüsü ile göz yorgunluğunu azaltır; 9W gücüyle 60W akkor ampullerle aynı ışığı yalnızca enerjinin küçük bir kısmını kullanarak verir.",
     price: 89.9,
     oldPrice: 119.9,
-    image: "/images/product-led.jpg",
+    image: asset("/images/product-led.jpg"),
     badge: "En Çok Satan",
     rating: 4.8,
     reviews: 2140,
@@ -46,7 +47,7 @@ export const products: Product[] = [
       "Işık Smart ile ışığınız ruh halinize uyum sağlar. Wi-Fi üzerinden Işık Home uygulamasına bağlanır; Alexa ve Google Asistan ile sesle kontrol edilir. Uyku, okuma, film ve parti gibi hazır sahneler sayesinde tek dokunuşla atmosfer değiştirirsiniz.",
     price: 349.9,
     oldPrice: 449.9,
-    image: "/images/product-smart.jpg",
+    image: asset("/images/product-smart.jpg"),
     badge: "Yeni Nesil",
     rating: 4.7,
     reviews: 896,
@@ -79,7 +80,7 @@ export const products: Product[] = [
       "Işık Pro serisi, yüksek tavanlı salonlar ve geniş yaşam alanları için tasarlandı. 14W gücünde 1.521 lümen ışık verir; düşük ısı üretimi sayesinde armatür ömrünü uzatır. Üçlü set halinde sunulur, böylece tüm mekânı tek seferde dönüştürebilirsiniz.",
     price: 269.9,
     oldPrice: 329.9,
-    image: "/images/product-led.jpg",
+    image: asset("/images/product-led.jpg"),
     badge: "3'lü Avantaj",
     rating: 4.9,
     reviews: 612,
@@ -112,7 +113,7 @@ export const products: Product[] = [
       "Klasik Edison estetiğini LED verimliliğiyle birleştiren dekoratif ampul. 2.200K sıcak amber ışığı, açık filamanı ve şeffaf camıyla göz alıcı bir atmosfer yaratır. Dim edilebilir yapısı ile restoran, kafe ve ev dekorasyonunda tercih edilir.",
     price: 149.9,
     oldPrice: 189.9,
-    image: "/images/product-filament.jpg",
+    image: asset("/images/product-filament.jpg"),
     badge: "Editör Seçimi",
     rating: 4.9,
     reviews: 1480,
@@ -145,7 +146,7 @@ export const products: Product[] = [
       "Nordik sarkıt, sade çizgileri ve sıcak ışık dağılımıyla mutfak adaları, yemek masaları ve resepsiyon alanları için tasarlandı. Kanallı cam kubbe, sıcak ışığı yumuşak çizgilerle dağıtır; ahşap detay ve pirinç bağlantıyla tamamlanır. Kablo boyu mekânınıza göre ayarlanabilir.",
     price: 1899,
     oldPrice: 2299,
-    image: "/images/product-pendant.jpg",
+    image: asset("/images/product-pendant.jpg"),
     rating: 4.8,
     reviews: 168,
     stock: 54,
@@ -177,7 +178,7 @@ export const products: Product[] = [
       "Bahçe, otopark, depo ve şantiye alanları için şebekeye ihtiyaç duymayan solar projektör. Monokristal güneş paneli ve 20 Ah bataryası ile gün boyu şarj olur, akşam otomatik olarak devreye girer. IP66 koruma sınıfı yağmur ve toza karşı dayanıklıdır.",
     price: 1499,
     oldPrice: 1899,
-    image: "/images/product-solar.jpg",
+    image: asset("/images/product-solar.jpg"),
     badge: "Enerji Bağımsız",
     rating: 4.5,
     reviews: 432,
@@ -208,7 +209,7 @@ export const products: Product[] = [
     description:
       "Entegre PIR sensörü ile 5 metreye kadar hareket algılar; ortamda kimse yokken ışığı kapatarak enerji israfını önler. Alacakaranlık modu sayesinde yalnızca karanlıkta devreye girer. Wi-Fi bağlantısıyla hassasiyet ve süre ayarları uygulamadan yapılabilir.",
     price: 219.9,
-    image: "/images/product-sensor.jpg",
+    image: asset("/images/product-sensor.jpg"),
     rating: 4.6,
     reviews: 312,
     stock: 340,
@@ -238,7 +239,7 @@ export const products: Product[] = [
     description:
       "Mutfak tezgâhı, TV ünitesi ve dolap altı aydınlatma için esnek, kesilebilir LED şerit. Güçlü 3M yapıştırıcısı ile kolayca monte edilir. 5 metre boyunca homojen ışık veren 2835 LED çipleri ve dahil adaptörü ile kutudan çıktığı gibi kullanıma hazırdır.",
     price: 189.9,
-    image: "/images/product-strip.jpg",
+    image: asset("/images/product-strip.jpg"),
     rating: 4.6,
     reviews: 740,
     stock: 760,
@@ -268,7 +269,7 @@ export const products: Product[] = [
       "Asma tavan sistemlerine gömülebilen 60×60 cm LED panel. 40W gücünde 3.600 lümen ışık üretir, homojen aydınlatma ile ofislerde ve mağazalarda gölge oluşumunu azaltır. 2 cm'lik inceliği sayesinde mimari görünümü bozmaz.",
     price: 549.9,
     oldPrice: 649.9,
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
     badge: "Ofis Favorisi",
     rating: 4.7,
     reviews: 238,
@@ -299,7 +300,7 @@ export const products: Product[] = [
     description:
       "Ray ve spot armatürler için GU10 duylu LED spot seti. 38 derecelik ışık açısı ile belirli alanları vurgular; mutfak tezgâhı, vitrin ve sanat galerisi gibi mekânlarda tercih edilir. Üçlü paket halinde sunulur.",
     price: 159.9,
-    image: "/images/product-spot.jpg",
+    image: asset("/images/product-spot.jpg"),
     rating: 4.5,
     reviews: 366,
     stock: 540,
@@ -329,7 +330,7 @@ export const products: Product[] = [
     description:
       "Kubbe masa lambası, çalışma ve okuma alanlarına hem işlev hem karakter katar. Dokunmatik dimmer ile üç ışık seviyesi sunar. Gövdesindeki USB-C çıkışı ile telefonunuzu şarj edebilirsiniz. Sarı mat metal gövdesi, Işık Holding atölyesinde üretilir.",
     price: 1249,
-    image: "/images/product-lamp.jpg",
+    image: asset("/images/product-lamp.jpg"),
     badge: "Atölye Üretimi",
     rating: 4.7,
     reviews: 94,
@@ -360,7 +361,7 @@ export const products: Product[] = [
     description:
       "Yüksek tavanlı endüstriyel alanlar için tasarlanmış highbay armatür. 150W gücünde 21.000 lümen ışık üretir, alüminyum kanatlı gövdesi ısıyı verimli biçimde dağıtır. IP65 koruma sınıfı ile tozlu ve nemli ortamlarda güvenle kullanılır.",
     price: 2899,
-    image: "/images/product-highbay.jpg",
+    image: asset("/images/product-highbay.jpg"),
     rating: 4.8,
     reviews: 76,
     stock: 76,
@@ -388,7 +389,7 @@ export const categories = [
     slug: "led-aydinlatma",
     icon: "zap",
     description: "Ev ve ofisin her köşesi için verimli LED çözümleri.",
-    image: "/images/product-led.jpg",
+    image: asset("/images/product-led.jpg"),
     count: 5,
   },
   {
@@ -396,7 +397,7 @@ export const categories = [
     slug: "akilli-aydinlatma",
     icon: "cpu",
     description: "Uygulama, ses ve sensörle yönetilen akıllı ışık.",
-    image: "/images/product-smart.jpg",
+    image: asset("/images/product-smart.jpg"),
     count: 2,
   },
   {
@@ -404,7 +405,7 @@ export const categories = [
     slug: "dekoratif",
     icon: "sparkles",
     description: "Mekâna karakter katan filament, sarkıt ve masa lambaları.",
-    image: "/images/product-filament.jpg",
+    image: asset("/images/product-filament.jpg"),
     count: 3,
   },
   {
@@ -412,7 +413,7 @@ export const categories = [
     slug: "solar-dis-mekan",
     icon: "sun",
     description: "Şebekeden bağımsız, dayanıklı dış mekân aydınlatması.",
-    image: "/images/product-solar.jpg",
+    image: asset("/images/product-solar.jpg"),
     count: 1,
   },
   {
@@ -420,7 +421,7 @@ export const categories = [
     slug: "endustriyel",
     icon: "factory",
     description: "Depo, fabrika ve yüksek tavan için profesyonel armatürler.",
-    image: "/images/product-highbay.jpg",
+    image: asset("/images/product-highbay.jpg"),
     count: 1,
   },
 ] as const;

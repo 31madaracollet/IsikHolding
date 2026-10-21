@@ -1,4 +1,5 @@
 import type { CompanyUpdate, NewsItem } from "@/lib/types";
+import { asset } from "@/lib/mode";
 
 /**
  * Canlı RSS kaynaklarına erişilemediğinde gösterilen editoryal demo akışı.
@@ -14,7 +15,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.enerjigunlugu.net/",
     publishedAt: "2026-10-21T09:15:00+03:00",
     category: "Enerji",
-    image: "/images/product-solar.jpg",
+    image: asset("/images/product-solar.jpg"),
   },
   {
     id: "haber-02",
@@ -25,7 +26,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://webrazzi.com/",
     publishedAt: "2026-10-21T07:40:00+03:00",
     category: "Teknoloji",
-    image: "/images/product-smart.jpg",
+    image: asset("/images/product-smart.jpg"),
   },
   {
     id: "haber-03",
@@ -36,7 +37,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.aa.com.tr/tr",
     publishedAt: "2026-10-20T18:20:00+03:00",
     category: "Enerji",
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
   },
   {
     id: "haber-04",
@@ -47,7 +48,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.donanimhaber.com/",
     publishedAt: "2026-10-20T11:05:00+03:00",
     category: "Teknoloji",
-    image: "/images/product-smart.jpg",
+    image: asset("/images/product-smart.jpg"),
   },
   {
     id: "haber-05",
@@ -58,7 +59,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.dunya.com/",
     publishedAt: "2026-10-19T16:30:00+03:00",
     category: "Sektör",
-    image: "/images/product-highbay.jpg",
+    image: asset("/images/product-highbay.jpg"),
   },
   {
     id: "haber-06",
@@ -69,7 +70,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.aa.com.tr/tr",
     publishedAt: "2026-10-19T09:10:00+03:00",
     category: "Ekonomi",
-    image: "/images/product-solar.jpg",
+    image: asset("/images/product-solar.jpg"),
   },
   {
     id: "haber-07",
@@ -80,7 +81,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://webrazzi.com/",
     publishedAt: "2026-10-18T14:45:00+03:00",
     category: "Teknoloji",
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
   },
   {
     id: "haber-08",
@@ -91,7 +92,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.dunya.com/",
     publishedAt: "2026-10-18T10:20:00+03:00",
     category: "Sektör",
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
   },
   {
     id: "haber-09",
@@ -102,7 +103,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.enerjigunlugu.net/",
     publishedAt: "2026-10-17T17:10:00+03:00",
     category: "Ekonomi",
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
   },
   {
     id: "haber-10",
@@ -113,7 +114,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.donanimhaber.com/",
     publishedAt: "2026-10-17T09:00:00+03:00",
     category: "Teknoloji",
-    image: "/images/product-pendant.jpg",
+    image: asset("/images/product-pendant.jpg"),
   },
   {
     id: "haber-11",
@@ -124,7 +125,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.ekonomim.com/",
     publishedAt: "2026-10-16T13:25:00+03:00",
     category: "Ekonomi",
-    image: "/images/product-strip.jpg",
+    image: asset("/images/product-strip.jpg"),
   },
   {
     id: "haber-12",
@@ -135,7 +136,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.dunya.com/",
     publishedAt: "2026-10-16T08:40:00+03:00",
     category: "Sektör",
-    image: "/images/product-panel.jpg",
+    image: asset("/images/product-panel.jpg"),
   },
   {
     id: "haber-13",
@@ -146,7 +147,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://www.donanimhaber.com/",
     publishedAt: "2026-10-15T15:15:00+03:00",
     category: "Teknoloji",
-    image: "/images/product-smart.jpg",
+    image: asset("/images/product-smart.jpg"),
   },
   {
     id: "haber-14",
@@ -157,7 +158,7 @@ export const fallbackNews: NewsItem[] = [
     sourceUrl: "https://webrazzi.com/",
     publishedAt: "2026-10-15T10:30:00+03:00",
     category: "Sektör",
-    image: "/images/product-led.jpg",
+    image: asset("/images/product-led.jpg"),
   },
 ];
 

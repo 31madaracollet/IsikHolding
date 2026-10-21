@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { subscribeViaBrowser } from "@/lib/supabase/fallback";
+import { STATIC_EXPORT } from "@/lib/mode";
 
 export function NewsletterForm({
   variant = "dark",
@@ -23,6 +24,20 @@ export function NewsletterForm({
     event.preventDefault();
     setState("loading");
     try {
+      if (STATIC_EXPORT) {
+        if (honeypot.trim()) {
+          setState("done");
+          setMessage("Aramıza hoş geldiniz!");
+          return;
+        }
+        const bridged = await subscribeViaBrowser(email, source);
+        if (!bridged) throw new Error("Kayıt tamamlanamadı. Lütfen tekrar deneyin.");
+        setState("done");
+        setMessage("Işık Bülten'e hoş geldiniz! İlk indirim kodunuz: ISIK15");
+        setEmail("");
+        return;
+      }
+
       const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

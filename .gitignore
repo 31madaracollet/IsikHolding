@@ -49,3 +49,6 @@ Thumbs.db
 
 # admin paneli yerel demo verisi
 .data/
+
+# statik derleme çalışma klasörü
+.static-build/

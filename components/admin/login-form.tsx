@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, ShieldCheck, User } from "lucide-react";
+import { getCurrentAdmin, signInAdmin } from "@/lib/admin/client-auth";
+import { STATIC_EXPORT } from "@/lib/mode";
 
-export function LoginForm({ next }: { next: string }) {
+export function LoginForm({ next: nextProp }: { next: string }) {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -12,12 +14,36 @@ export function LoginForm({ next }: { next: string }) {
   const [state, setState] = useState<"idle" | "loading" | "error">("idle");
   const [error, setError] = useState("");
 
+  // Statik dağıtımda oturum Supabase Auth'ta tutulur; zaten açıksa panele geç.
+  useEffect(() => {
+    if (!STATIC_EXPORT) return;
+    let alive = true;
+    getCurrentAdmin().then((admin) => {
+      if (alive && admin) router.replace(nextProp);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [router, nextProp]);
+
+  function resolveNext() {
+    if (typeof window === "undefined") return nextProp;
+    const requested = new URLSearchParams(window.location.search).get("next");
+    return requested && requested.startsWith("/admin") ? requested : "/admin";
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setState("loading");
     setError("");
 
     try {
+      if (STATIC_EXPORT) {
+        await signInAdmin(identifier, password);
+        // Tam sayfa geçişi: panel kabuğu Supabase oturumunu yeniden okur.
+        window.location.assign(resolveNext());
+        return;
+      }
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -29,7 +55,7 @@ export function LoginForm({ next }: { next: string }) {
           typeof data.error === "string" ? data.error : "Giriş yapılamadı.",
         );
       }
-      router.replace(next);
+      router.replace(resolveNext());
       router.refresh();
     } catch (submitError) {
       setState("error");

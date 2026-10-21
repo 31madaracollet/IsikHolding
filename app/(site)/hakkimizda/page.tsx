@@ -20,6 +20,7 @@ import { Counter } from "@/components/counter";
 import { GitHubCard } from "@/components/github-card";
 import { SectionHeading } from "@/components/section-heading";
 import { site } from "@/lib/site";
+import { asset } from "@/lib/mode";
 
 export const metadata: Metadata = {
   title: "Hakkımızda · 1998'den beri ışık üretiyoruz",
@@ -184,7 +185,7 @@ export default function AboutPage() {
               <div className="overflow-hidden rounded-[32px] border border-ink/[0.07] bg-white p-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/about-warehouse.jpg"
+                  src={asset("/images/about-warehouse.jpg")}
                   alt="Işık Holding lojistik merkezi"
                   className="aspect-[4/3] w-full rounded-[26px] object-cover"
                 />
@@ -192,7 +193,7 @@ export default function AboutPage() {
               <div className="absolute -bottom-6 -left-4 hidden w-[190px] overflow-hidden rounded-2xl border-4 border-cream bg-sand shadow-soft sm:block">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/lifestyle-home.jpg"
+                  src={asset("/images/lifestyle-home.jpg")}
                   alt="Işık Holding ürünleriyle aydınlatılmış yaşam alanı"
                   className="aspect-[4/3] w-full object-cover"
                 />

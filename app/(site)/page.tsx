@@ -34,6 +34,7 @@ import { getNews, companyUpdates } from "@/lib/news";
 import { subscriptionPlans } from "@/lib/pricing";
 import { site } from "@/lib/site";
 import { formatDate } from "@/lib/utils";
+import { asset } from "@/lib/mode";
 
 export const revalidate = 900;
 
@@ -225,7 +226,7 @@ export default async function HomePage() {
             <div className="relative overflow-hidden rounded-[36px] bg-brand shadow-[0_50px_120px_-40px_rgba(180,123,0,0.55)]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/hero-bulb.jpg"
+                src={asset("/images/hero-bulb.jpg")}
                 alt="Işık Holding Edison ampul kampanyası"
                 className="aspect-[5/4] w-full object-cover"
               />
@@ -251,7 +252,7 @@ export default async function HomePage() {
               <div className="flex items-center gap-2">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={heroProduct?.image ?? "/images/product-smart.jpg"}
+                  src={heroProduct?.image ?? asset("/images/product-smart.jpg")}
                   alt=""
                   className="size-10 rounded-lg object-cover"
                 />
@@ -511,7 +512,7 @@ export default async function HomePage() {
               <div className="overflow-hidden rounded-t-[160px] rounded-b-3xl border-2 border-ink/10 bg-white/30 p-2 backdrop-blur">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/images/product-led.jpg"
+                  src={asset("/images/product-led.jpg")}
                   alt="Işık Eco LED ampul kampanyası"
                   className="aspect-[4/5] w-full rounded-t-[150px] rounded-b-2xl object-cover"
                 />
@@ -541,7 +542,7 @@ export default async function HomePage() {
             <div className="relative min-h-[300px] overflow-hidden lg:min-h-[500px]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/images/about-warehouse.jpg"
+                src={asset("/images/about-warehouse.jpg")}
                 alt="Işık Holding depo ve lojistik merkezi"
                 className="absolute inset-0 size-full object-cover"
               />
