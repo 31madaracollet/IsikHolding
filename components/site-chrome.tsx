@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CartProvider } from "@/components/cart-provider";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { IsikAiWidget } from "@/components/isik-ai/chat-widget";
 import { getCurrentAdmin } from "@/lib/admin/client-auth";
 import { getSupabaseAuthClient } from "@/lib/supabase/auth-client";
 import { STATIC_EXPORT } from "@/lib/mode";
@@ -70,6 +71,7 @@ export function SiteChrome({
       <SiteHeader admin={admin} />
       <main id="main">{children}</main>
       <SiteFooter admin={admin} />
+      <IsikAiWidget />
     </CartProvider>
   );
 }

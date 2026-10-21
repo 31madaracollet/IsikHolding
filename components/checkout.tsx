@@ -24,7 +24,7 @@ import {
 } from "@/lib/checkout";
 import { cn, formatPrice } from "@/lib/utils";
 import { submitOrderViaBrowser } from "@/lib/supabase/fallback";
-import { STATIC_EXPORT } from "@/lib/mode";
+import { asset, STATIC_EXPORT } from "@/lib/mode";
 
 export function Checkout() {
   const { items, subtotal, setQty, remove, clear, ready } = useCart();
@@ -510,11 +510,11 @@ export function Checkout() {
               className="mt-0.5 size-4 rounded border-ink/20 accent-[#121212]"
             />
             <span>
-              <a href="/politikalar#mesafeli" className="underline underline-offset-2 hover:text-ink">
+              <a href={asset("/politikalar#mesafeli")} className="underline underline-offset-2 hover:text-ink">
                 Mesafeli satış sözleşmesini
               </a>{" "}
               ve{" "}
-              <a href="/politikalar#kvkk" className="underline underline-offset-2 hover:text-ink">
+              <a href={asset("/politikalar#kvkk")} className="underline underline-offset-2 hover:text-ink">
                 KVKK aydınlatma metnini
               </a>{" "}
               okudum, onaylıyorum.

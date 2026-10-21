@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { subscribeViaBrowser } from "@/lib/supabase/fallback";
-import { STATIC_EXPORT } from "@/lib/mode";
+import { asset, STATIC_EXPORT } from "@/lib/mode";
 
 export function NewsletterForm({
   variant = "dark",
@@ -150,7 +150,7 @@ export function NewsletterForm({
         Ayda en fazla 2 e-posta. İstediğiniz zaman tek tıkla çıkabilirsiniz.
         Kaydolarak{" "}
         <a
-          href="/politikalar#gizlilik"
+          href={asset("/politikalar#gizlilik")}
           className={cn(
             "underline underline-offset-2",
             variant === "dark" ? "hover:text-white" : "hover:text-ink",

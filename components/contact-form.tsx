@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, CheckCircle2, Loader2, Send } from "lucide-react";
 import { submitContactViaBrowser } from "@/lib/supabase/fallback";
-import { STATIC_EXPORT } from "@/lib/mode";
+import { asset, STATIC_EXPORT } from "@/lib/mode";
 
 const subjects = [
   "Genel bilgi",
@@ -244,7 +244,7 @@ export function ContactForm({
         <span>
           Kişisel verilerimin, talebimin değerlendirilmesi amacıyla işlenmesini
           kabul ediyorum.{" "}
-          <a href="/politikalar#kvkk" className="underline underline-offset-2 hover:text-ink">
+          <a href={asset("/politikalar#kvkk")} className="underline underline-offset-2 hover:text-ink">
             KVKK aydınlatma metni
           </a>
         </span>

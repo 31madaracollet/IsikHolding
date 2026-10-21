@@ -10,6 +10,7 @@ import {
 } from "react";
 import { CheckCircle2, ShoppingBag, X } from "lucide-react";
 import { products } from "@/lib/products";
+import { asset } from "@/lib/mode";
 
 export interface CartLine {
   slug: string;
@@ -126,7 +127,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider value={value}>
       {children}
       <div
-        className="pointer-events-none fixed inset-x-0 bottom-5 z-[120] flex justify-center px-4 sm:justify-end sm:px-6"
+        className="pointer-events-none fixed inset-x-0 bottom-24 z-[120] flex justify-center px-4 sm:justify-end sm:px-6"
         aria-live="polite"
       >
         {toast && (
@@ -136,7 +137,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             </span>
             <span className="max-w-[260px]">{toast}</span>
             <a
-              href="/sepet"
+              href={asset("/sepet")}
               className="ml-2 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs font-semibold text-brand-200 transition hover:bg-white/20"
             >
               <ShoppingBag className="size-3.5" />
