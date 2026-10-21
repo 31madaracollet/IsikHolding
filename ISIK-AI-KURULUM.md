@@ -1,8 +1,10 @@
 # Işık AI — kurulum ve bakım notları
 
-Site üzerindeki yapay zekâ asistanı. **Yalnızca** Işık Holding ürünleri, fiyatları,
-kargo/kupon kuralları ve haberleri hakkında cevap verir; konu dışı soruları tek
-cümleyle reddeder.
+Site üzerindeki yapay zekâ asistanı (**v12**). Işık Holding ürünleri ve fiyatları,
+ürün seçimi, elektrik tesisatı, aydınlatma/elektronik/enerji bilgisi, akıllı ev,
+solar & EV şarjı, kargo/kupon/iade ve güncel teknoloji haberleri konularında
+yardımcı olur. Sadece siyaset, spor, magazin, hukuk/tıp/yatırım tavsiyesi,
+kod/ödev ve rakip marka önerisi reddedilir.
 
 ## Mimari
 
@@ -25,6 +27,7 @@ Tarayıcı (sarı "Işık AI" balonu)
 Edge Function bu dosyayı (10 dk önbellekle) çekip sistem prompt'una ekler.
 
 - Ürün ekle → `npm run build:static` → commit. **AI tarafında deploy gerekmez.**
+- Katalog şu an **12 kategori / 84 ürün**; yanıttaki `catalogCount` alanı doğrular.
 - Katalog adresi: `https://31madaracollet.github.io/IsikHolding/catalog.json`
 
 ## Bileşenler
@@ -52,21 +55,32 @@ deploy etmek gerekmez.
 
 ## Davranış kuralları (sistem prompt'u)
 
-- Kimlik: "Ben Işık AI — Işık Holding'in ürün ve haber asistanıyım."
+- Kimlik: "Ben Işık AI — Işık Holding'in aydınlatma, elektrik-elektronik ve enerji asistanıyım."
 - İhtiyaca göre ürün bulur: oda/m² → lümen, 2700-3000K / 4000K / 6500K, E27-GU10
   duy tipi, bütçe filtresi. En fazla 3 ürün, her biri tek satır:
   `ad — fiyat — /urunler/slug — neden uygun`.
-- Haberlerde tarih + başlık + tek cümle özet + kaynak verir.
+- Tesisat/teknik sorularda referans tabloları kullanır (kablo kesiti, otomat
+  seçimi, kaçak akım, solar boyutlandırma).
+- Haberlerde tarih + kaynak + başlık verir; eşleşme yoksa en güncel 3'ü söyler.
 - Fiyat/stok/garanti uydurmaz; katalogda yoksa "kataloğumuzda bu ürün yok" der.
 - Sipariş/iade sorularını `/iletisim` sayfasına yönlendirir.
-- Üslup: en fazla 90 kelime, dolgu cümlesi ve emoji yok.
+- Üslup: en fazla 100 kelime, dolgu cümlesi ve emoji yok.
+
+### Token bütçesi (önemli)
+
+Groq ücretsiz katmanı model başına **8.000 token/dakika (TPM)** veriyor. v11'de
+katalog tam (3 özellik + 2 avantaj) gönderiliyordu ve 84 üründe prompt ~9.500
+token'a çıkıp **502** dönüyordu. v12'de katalog tek satıra indirildi
+(`ad | fiyat | ilk özellik | slug`) ve prompt tabanı kısaltıldı → ~5.600 token.
+Katalog büyürse önce `buildCatalogBlock()` çıktısını kısalt; yoksa TPM'e takılır.
 
 ## Sınırlar
 
 - Saatlik **40 istek / IP** (fonksiyon içi bellek; yeniden başlatmada sıfırlanır).
 - Son **8 mesaj** bağlam olarak gönderilir, mesaj başına **1.200 karakter**.
-- Groq isteği **24 sn** sonra iptal edilir (`temperature 0.2`, `max_tokens 1400`,
+- Groq isteği **26 sn** sonra iptal edilir (`temperature 0.25`, `max_tokens 900`,
   `reasoning_effort: low`).
+- Haber akışı 10 dk, katalog 10 dk önbelleklenir (Edge Function bellek içi).
 
 ## Test
 
