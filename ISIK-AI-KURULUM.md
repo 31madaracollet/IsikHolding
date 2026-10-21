@@ -19,6 +19,14 @@ Tarayıcı (sarı "Işık AI" balonu)
 - Fonksiyon Türkçe hata mesajı döner: `400` boş mesaj, `405` yanlış metot,
   `429` saatlik limit, `502/504` sağlayıcı hatası.
 
+## Katalog (otomatik)
+
+`app/catalog.json/route.ts` statik derlemede `docs/catalog.json` üretir.
+Edge Function bu dosyayı (10 dk önbellekle) çekip sistem prompt'una ekler.
+
+- Ürün ekle → `npm run build:static` → commit. **AI tarafında deploy gerekmez.**
+- Katalog adresi: `https://31madaracollet.github.io/IsikHolding/catalog.json`
+
 ## Bileşenler
 
 | Dosya | Görev |
@@ -26,6 +34,7 @@ Tarayıcı (sarı "Işık AI" balonu)
 | `components/isik-ai/chat-widget.tsx` | Yüzen buton, sohbet paneli, öneri çipleri, ürün linkleri |
 | `lib/isik-ai.ts` | Uç nokta, istek/yanıt tipleri, `askIsikAi()` |
 | `components/site-chrome.tsx` | Widget'ı site kabuğuna bağlar |
+| `app/catalog.json/route.ts` | AI'nın okuduğu makine okunur katalog |
 | `supabase/functions/isik-ai/` | Sistem prompt'unun kopyası + deploy notları (asıl kaynak panel) |
 
 ## Secret'lar

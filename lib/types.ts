@@ -3,7 +3,14 @@ export type Category =
   | "Akıllı Aydınlatma"
   | "Dekoratif"
   | "Solar & Dış Mekan"
-  | "Endüstriyel";
+  | "Endüstriyel"
+  | "Kablo & Uzatma"
+  | "Priz & Anahtar"
+  | "Pano & Sigorta"
+  | "Elektrik Malzemeleri"
+  | "Akıllı Ev"
+  | "Enerji & Şarj"
+  | "Ölçüm & Güvenlik";
 
 export interface ProductSpec {
   label: string;

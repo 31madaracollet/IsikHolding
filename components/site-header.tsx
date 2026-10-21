@@ -6,14 +6,20 @@ import { usePathname } from "next/navigation";
 import {
   ArrowRight,
   ArrowUpRight,
+  BatteryCharging,
+  Cable,
   Cpu,
   Factory,
+  Gauge,
+  House,
   Menu,
   Phone,
+  Plug,
   ShieldCheck,
   ShoppingBag,
   Sparkles,
   Sun,
+  Wrench,
   X,
   Zap,
 } from "lucide-react";
@@ -35,6 +41,13 @@ const categoryIcons = {
   sparkles: Sparkles,
   sun: Sun,
   factory: Factory,
+  cable: Cable,
+  plug: Plug,
+  shield: ShieldCheck,
+  wrench: Wrench,
+  home: House,
+  battery: BatteryCharging,
+  gauge: Gauge,
 } as const;
 
 const megaProduct = products.find((product) => product.slug === "isik-smart-rgbw")!;
