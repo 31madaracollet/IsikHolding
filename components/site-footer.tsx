@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowUpRight,
+  Lock,
   Mail,
   MapPin,
   Phone,
@@ -34,7 +35,11 @@ const supportLinks = [
   { label: "Sık sorulan sorular", href: "/fiyatlandirma#sss" },
 ];
 
-export function SiteFooter() {
+export function SiteFooter({
+  admin,
+}: {
+  admin?: { name: string; email: string } | null;
+}) {
   return (
     <footer className="relative overflow-hidden bg-ink text-white">
       <div
@@ -176,6 +181,13 @@ export function SiteFooter() {
               Mesafeli satış
             </Link>
             <span className="hidden h-3 w-px bg-white/15 sm:block" />
+            <Link
+              href={admin ? "/admin" : "/admin/giris"}
+              className="inline-flex items-center gap-1.5 transition hover:text-white"
+            >
+              <Lock className="size-3" />
+              {admin ? "Yönetim paneli" : "Yönetici girişi"}
+            </Link>
             <span className="inline-flex items-center gap-1.5">
               <span className="size-1.5 rounded-full bg-emerald-400" />
               Next.js + Supabase altyapısı

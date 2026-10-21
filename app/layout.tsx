@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/manrope";
 import "@fontsource-variable/space-grotesk";
 import "./globals.css";
-import { CartProvider } from "@/components/cart-provider";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -64,11 +61,7 @@ export default function RootLayout({
         >
           İçeriğe geç
         </a>
-        <CartProvider>
-          <SiteHeader />
-          <main id="main">{children}</main>
-          <SiteFooter />
-        </CartProvider>
+        {children}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

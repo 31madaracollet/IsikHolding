@@ -21,6 +21,7 @@ Sarı–beyaz temalı, çok sayfalı bir kurumsal tanıtım ve e-ticaret deneyim
 | **Hakkımızda** | Hikâye, zaman çizelgesi, değerler, sürdürülebilirlik, ekip, sertifikalar, bayilik, **canlı GitHub kartı** |
 | **İletişim** | Form (Supabase), hızlı iletişim kartları, stilize harita, departman e-postaları, SSS |
 | **Politikalar** | KVKK, gizlilik, çerez, mesafeli satış, teslimat, iade, garanti |
+| **Yönetim paneli** | `/admin` — Akif Işık oturumu açıkken üst menüde “Yönetim” sekmesi; KPI'lar, sipariş durumu, mesaj triyajı, bülten listesi, CSV dışa aktarma |
 
 ---
 
@@ -102,9 +103,49 @@ Uç nokta: `GET /api/health` → `{ supabase: { configured, reachable, latencyMs
 | `/api/newsletter` | POST | Bülten kaydı → `newsletter_subscribers`, tekrar kayıtta dostça yanıt |
 | `/api/orders` | POST | Sipariş → `orders` + `order_items`, sunucuda fiyat yeniden hesaplanır |
 | `/api/health` | GET | Supabase yapılandırma/erişim durumu (anahtar sızdırmaz) |
+| `/api/auth/login` | POST | Yönetici girişi → imzalı httpOnly çerez (7 gün, IP başına 6 deneme/dk) |
+| `/api/auth/logout` | POST | Oturum çerezini siler |
+| `/api/auth/session` | GET | Aktif oturum bilgisi |
+| `/api/admin/orders` | PATCH | Sipariş durumu: `new`, `confirmed`, `shipped`, `delivered`, `cancelled` |
+| `/api/admin/messages` | PATCH | Mesaj durumu: `new`, `in_progress`, `closed` |
 
 Formlarda honeypot alanı ve IP bazlı hız sınırı (rate limit) bulunur.
 Sipariş tutarları istemciden gelen fiyatlara güvenilmeden, sunucuda katalogdan yeniden hesaplanır.
+
+---
+
+## Yönetim paneli (`/admin`)
+
+`/admin` altındaki tüm yollar `middleware.ts` ile korunur: oturum çerezi yoksa
+`/admin/giris?next=...` sayfasına yönlendirilir. İmza doğrulaması ayrıca sunucu
+tarafında (`app/admin/(panel)/layout.tsx`) tekrar yapılır.
+
+`.env.local`:
+
+```env
+ADMIN_NAME=Akif Işık
+ADMIN_EMAIL=akif@isikholding.com
+# Değerde # varsa tırnak kullanın, yoksa .env bunu yorum sanıp değeri keser.
+ADMIN_PASSWORD="guclu-bir-sifre#2026"
+AUTH_SECRET=openssl-rand-hex-32   # üretmek için: openssl rand -hex 32
+```
+
+Giriş ekranı kullanıcı adı olarak **ad soyad**, **e-posta** veya **e-postanın
+kullanıcı kısmını** kabul eder; Türkçe karakter farkları (ı/i, ş/s, ğ/g …)
+normalize edilir, yani `Akif Isik` de çalışır.
+
+**Sekmenin görünmesi:** oturum açıkken `app/(site)/layout.tsx` çerezden oturumu
+okur ve `site-header` / `site-footer` bileşenlerine `admin` prop'u geçer. Bu sayede
+“Yönetim” sekmesi yalnızca giriş yapılmışken görünür — herkese açık bir bağlantı yoktur.
+
+Panel sekmeleri: **Genel bakış** (ciro, sipariş, mesaj, bülten KPI'ları + 7 günlük
+grafik), **Siparişler** (arama, durum filtresi, satır içi durum güncelleme),
+**Mesajlar** (triyaj), **Bülten** (abone listesi, e-postaları kopyala, CSV indir).
+Veriler `SUPABASE_SERVICE_ROLE_KEY` ile sunucuda okunur; Supabase'e erişilemeyen
+ortamlarda panel `.data/admin-store.json` üzerindeki örnek veriyle çalışır ve
+turuncu “Önizleme modu” şeridi gösterir.
+
+> `AUTH_SECRET` değişirse tüm açık oturumlar geçersiz olur.
 
 ---
 
@@ -125,18 +166,30 @@ gösterir. Token yoksa veya API'ye erişilemezse kart zarif biçimde depo bağla
 ## Klasör yapısı
 
 ```
+middleware.ts              # /admin koruması (çerez yoksa /admin/giris?next=…)
 app/
-  page.tsx                 # anasayfa (haber akışı + tüm bölümler)
-  urunler/                 # katalog + [slug] ürün detayı
-  haberler/                # canlı haber akışı
-  fiyatlandirma/           # abonelik, bayi, fiyat listesi
-  hakkimizda/              # kurumsal + GitHub kartı
-  iletisim/                # form + harita + departmanlar
-  sepet/                   # sepet & sipariş akışı
-  politikalar/             # yasal metinler
-  api/                     # news, github, contact, newsletter, orders
-components/                # header, footer, sepet, ürün/haber kartları, asistan…
+  layout.tsx               # <html>/<body>, fontlar, metadata, JSON-LD
+  (site)/                  # herkese açık site kabuğu (CartProvider + header/footer)
+    page.tsx               # anasayfa (haber akışı + tüm bölümler)
+    urunler/               # katalog + [slug] ürün detayı
+    haberler/              # canlı haber akışı
+    fiyatlandirma/         # abonelik, bayi, fiyat listesi
+    hakkimizda/            # kurumsal + GitHub kartı
+    iletisim/              # form + harita + departmanlar
+    sepet/                 # sepet & sipariş akışı
+    politikalar/           # yasal metinler
+  admin/
+    giris/                 # giriş ekranı (oturum varsa /admin'e döner)
+    (panel)/               # korumalı panel kabuğu + gösterge tablosu
+  api/                     # news, github, contact, newsletter, orders, health, auth/*, admin/*
+components/
+  site-header.tsx          # admin oturumunda “Yönetim” sekmesi
+  admin/                   # login-form, dashboard, logout-button
+  …                        # sepet, ürün/haber kartları, asistan
 lib/
+  auth.ts                  # imzalı oturum çerezi (HMAC-SHA256, 7 gün)
+  auth-constants.ts        # edge/node ortak sabitler (node:crypto import etmez)
+  admin/                   # tipler, Supabase okuma katmanı, demo store
   products.ts              # 12 ürünlük katalog
   news.ts                  # RSS çekme + fallback
   news-data.ts             # editoryal fallback + kurumsal duyurular
@@ -163,9 +216,23 @@ public/images/             # üretilmiş kampanya & ürün görselleri
 
 ## Dağıtım
 
-Vercel'a deploy etmek için depoyu bağlayın ve yukarıdaki ortam değişkenlerini ekleyin.
-Supabase şeması çalıştırıldığında formlar ve siparişler kalıcı olarak kaydedilir.
+**Vercel (önerilen).** Depoyu içe aktarın, yukarıdaki ortam değişkenlerini ekleyin, deploy edin.
+Supabase şeması çalıştırıldığında formlar, siparişler ve panel verileri kalıcı olarak kaydedilir.
 `NEXT_PUBLIC_SITE_URL` değerini gerçek alan adınızla güncelleyin (sitemap ve canonical URL'ler için).
+
+> **GitHub Pages bu projeyi barındıramaz.** Site yalnızca statik dosyalardan oluşmuyor:
+> sunucu tarafı route handler'lar (`/api/*`), imzalı çerezle çalışan `middleware`,
+> Supabase service-role okumaları ve dinamik `/admin` sayfası gerekiyor. GitHub Pages
+> yalnızca statik dosya servis eder (PHP/Node çalıştırmaz), bu yüzden `next export`
+> yapılmadıkça orada çalışmaz — panel, formlar ve sepet siparişleri de çalışmaz.
+> Canlı önizleme için Vercel / Netlify / herhangi bir Node sunucusu kullanın.
+
+Yerel üretim derlemesi:
+
+```bash
+npm run build
+NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-certificates.crt npx next start -H 0.0.0.0 -p 3000
+```
 
 ---
 

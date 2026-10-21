@@ -46,3 +46,6 @@ Thumbs.db
 # local supabase credentials (never commit)
 .env.local
 .supabase/
+
+# admin paneli yerel demo verisi
+.data/

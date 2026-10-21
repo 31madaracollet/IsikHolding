@@ -10,6 +10,7 @@ import {
   Factory,
   Menu,
   Phone,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Sun,
@@ -22,6 +23,7 @@ import {
   YoutubeIcon,
 } from "@/components/brand-icons";
 import { Logo } from "@/components/logo";
+import { LogoutButton } from "@/components/admin/logout-button";
 import { useCart } from "@/components/cart-provider";
 import { categories, products } from "@/lib/products";
 import { site } from "@/lib/site";
@@ -37,7 +39,31 @@ const categoryIcons = {
 
 const megaProduct = products.find((product) => product.slug === "isik-smart-rgbw")!;
 
-export function SiteHeader() {
+function LayoutDashboardIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="size-3.5"
+      aria-hidden="true"
+    >
+      <rect width="7" height="9" x="3" y="3" rx="1" />
+      <rect width="7" height="5" x="14" y="3" rx="1" />
+      <rect width="7" height="9" x="14" y="12" rx="1" />
+      <rect width="7" height="5" x="3" y="16" rx="1" />
+    </svg>
+  );
+}
+
+export function SiteHeader({
+  admin,
+}: {
+  admin?: { name: string; email: string } | null;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { count } = useCart();
@@ -121,6 +147,16 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+
+            {admin && (
+              <Link
+                href="/admin"
+                className="order-4 inline-flex items-center gap-1.5 rounded-full bg-brand px-3.5 py-2 text-[13px] font-bold text-ink transition hover:bg-brand-300"
+              >
+                <ShieldCheck className="size-3.5" />
+                Yönetim
+              </Link>
+            )}
 
             <div className="group relative order-2">
               <Link
@@ -235,12 +271,29 @@ export function SiteHeader() {
                 {count}
               </span>
             </Link>
-            <Link
-              href="/iletisim"
-              className="hidden rounded-full border border-ink/15 px-4 py-2.5 text-[12.5px] font-bold transition hover:border-ink/40 xl:inline-flex"
-            >
-              Bayi ol
-            </Link>
+            {admin ? (
+              <div className="flex items-center gap-1 rounded-full border border-ink/10 bg-white py-1 pl-1 pr-1.5">
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-ink px-2.5 py-1.5 text-[10.5px] font-bold text-white transition hover:bg-ink-soft"
+                  title={`${admin.name} · yönetim paneli`}
+                >
+                  <ShieldCheck className="size-3 text-brand" />
+                  <span className="hidden sm:inline">
+                    {admin.name.split(" ")[0]}
+                  </span>
+                  <span className="sm:hidden">Yönetim</span>
+                </Link>
+                <LogoutButton compact className="!size-7 !border-0" />
+              </div>
+            ) : (
+              <Link
+                href="/iletisim"
+                className="hidden rounded-full border border-ink/15 px-4 py-2.5 text-[12.5px] font-bold transition hover:border-ink/40 xl:inline-flex"
+              >
+                Bayi ol
+              </Link>
+            )}
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -310,6 +363,30 @@ export function SiteHeader() {
                 </Link>
               ))}
             </nav>
+
+            {admin && (
+              <div className="mt-4 rounded-2xl bg-ink p-4 text-white">
+                <p className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.18em] text-brand-300">
+                  <ShieldCheck className="size-3" /> Yönetici oturumu
+                </p>
+                <p className="mt-1.5 font-display text-[16px] font-semibold">
+                  {admin.name}
+                </p>
+                <div className="mt-3 flex items-center gap-2">
+                  <Link
+                    href="/admin"
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-brand px-3 py-2.5 text-[10.5px] font-bold text-ink"
+                  >
+                    <LayoutDashboardIcon /> Yönetim paneli
+                  </Link>
+                  <LogoutButton
+                    tone="dark"
+                    label="Çıkış"
+                    className="!border-white/20 !bg-white/5 !px-3 !py-2.5 !text-[10.5px] !text-white/70"
+                  />
+                </div>
+              </div>
+            )}
 
             <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/40">
               Kategoriler
