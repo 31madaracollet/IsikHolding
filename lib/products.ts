@@ -463,7 +463,7 @@ export const products: Product[] = [
     slug: "uzatma-3lu-toprakli-5m",
     name: "3'lü Topraklı Uzatma Kablosu · 5 m",
     category: "Kablo & Uzatma",
-    shortDescription: "3 metreli 3 prizli grup priz, çocuk korumalı ve anahtarlı.",
+    shortDescription: "5 metre kablolu 3 prizli grup priz, çocuk korumalı ve anahtarlı.",
     description: "Ev ve ofiste tek prizden üç cihaz çalıştırmak için grup priz. Çocuk korumalı priz gözleri, 3x1,5 mm² kablo ve 16 A kapasite ile günlük kullanıma uygundur.",
     price: 189.9,
     oldPrice: 239.9,
