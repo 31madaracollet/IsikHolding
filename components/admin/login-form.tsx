@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock, ShieldCheck, User } from "lucide-react";
 import { getCurrentAdmin, signInAdmin } from "@/lib/admin/client-auth";
-import { STATIC_EXPORT } from "@/lib/mode";
+import { asset, STATIC_EXPORT } from "@/lib/mode";
 
 export function LoginForm({ next: nextProp }: { next: string }) {
   const router = useRouter();
@@ -41,7 +41,7 @@ export function LoginForm({ next: nextProp }: { next: string }) {
       if (STATIC_EXPORT) {
         await signInAdmin(identifier, password);
         // Tam sayfa geçişi: panel kabuğu Supabase oturumunu yeniden okur.
-        window.location.assign(resolveNext());
+        window.location.assign(asset(resolveNext()));
         return;
       }
       const response = await fetch("/api/auth/login", {
